@@ -1,11 +1,11 @@
-# Installation — short-study skill
+# Installation - short-study skill
 
 This skill is designed to be installed at the **user level** in Claude Code, so it's available across all your projects without copying it into each repo.
 
 ## Prerequisites
 
 - Claude Code installed and working
-- Python 3.10+ available on your system (required for the analyzer script — it uses `from __future__ import annotations` and PEP 604 union syntax `int | None`)
+- Python 3.10+ available on your system (required for the analyzer script - it uses `from __future__ import annotations` and PEP 604 union syntax `int | None`)
 
 No third-party Python packages are required. `scripts/analyze.py` uses the standard library only (`argparse`, `csv`, `json`, `statistics`).
 

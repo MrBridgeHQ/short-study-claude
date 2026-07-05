@@ -1,10 +1,10 @@
-# FRAME + ANALYZE — doctrine reference
+# FRAME + ANALYZE - doctrine reference
 
 This reference covers the first two steps of the pipeline: **Frame** (turn a vague question into one falsifiable question) and **Analyze** (run `scripts/analyze.py` and capture its JSON output). The one-pager structure is in `references/one-pager.md`; promotion is in `references/promotion.md`.
 
 ---
 
-## 1. FRAME — rewrite the question
+## 1. FRAME - rewrite the question
 
 A vague question ("are indie cafes better?", "do hotel stars matter?") cannot produce a falsifiable answer. Frame it as a single testable claim before touching the data.
 
@@ -16,9 +16,9 @@ One question -> one comparison OR one correlation OR one distribution. If the or
 
 | Question type | When to use | `analyze.py` subcommand |
 |---|---|---|
-| **Comparison** | Two or more groups on a shared numeric metric — "do A and B score differently?" | `compare` |
-| **Correlation** | Two numeric variables — "do higher X values come with higher Y?" | `correlate` |
-| **Distribution** | Counts or proportions across categories — "how is the sample split, and what is each category's average?" | `distribute` |
+| **Comparison** | Two or more groups on a shared numeric metric - "do A and B score differently?" | `compare` |
+| **Correlation** | Two numeric variables - "do higher X values come with higher Y?" | `correlate` |
+| **Distribution** | Counts or proportions across categories - "how is the sample split, and what is each category's average?" | `distribute` |
 
 ### Real-world examples
 
@@ -36,11 +36,11 @@ Document the reframed question, the question type, and the subcommand choice in 
 
 ---
 
-## 2. Hybrid input — data sources and CLI
+## 2. Hybrid input - data sources and CLI
 
 Data arrives as a **local CSV or JSON file** (pre-downloaded, from a dataset export or manual curation) or as **JSON piped to stdin**. The script accepts both.
 
-**R1 reminder: no live fetching in the script.** `scripts/analyze.py` reads a local file or stdin only — it never opens a network connection. Data must arrive as a pre-downloaded file or as dataset JSON piped in. The script never invokes `requests`, `httpx`, `curl`, `playwright`, or any HTTP library. Fetch data first (through whatever data pipeline you use), then pass it to the script.
+**R1 reminder: no live fetching in the script.** `scripts/analyze.py` reads a local file or stdin only - it never opens a network connection. Data must arrive as a pre-downloaded file or as dataset JSON piped in. The script never invokes `requests`, `httpx`, `curl`, `playwright`, or any HTTP library. Fetch data first (through whatever data pipeline you use), then pass it to the script.
 
 ### Exact CLI commands
 
@@ -60,7 +60,7 @@ python3 scripts/analyze.py correlate \
   --y-col <y_column>
 ```
 
-**distribute** (stdin — JSON piped in):
+**distribute** (stdin - JSON piped in):
 ```bash
 cat data.json | python3 scripts/analyze.py distribute \
   --input - \
@@ -78,7 +78,7 @@ The script writes a single JSON object to stdout and exits 0 on success. On erro
 
 ## 3. The three operations
 
-### 3.1 `compare` — two or more groups on a numeric metric
+### 3.1 `compare` - two or more groups on a numeric metric
 
 **When to use:** the question is "does group A score higher than group B?" or any multi-group variant. The groups live in one column (`--group-col`), the numeric values in another (`--value-col`).
 
@@ -122,15 +122,15 @@ The script writes a single JSON object to stdout and exits 0 on success. On erro
 }
 ```
 
-Groups are sorted alphabetically by label. Each group object contains: `label`, `n`, `mean`, `median`, `std` (population sigma — see section 4e), `min`, `max`.
+Groups are sorted alphabetically by label. Each group object contains: `label`, `n`, `mean`, `median`, `std` (population sigma - see section 4e), `min`, `max`.
 
 The `chart` object is the single source of truth for the visual: type `"bar"`, x axis = `group_col`, y axis = `"mean <value_col>"`, series = one entry per group with its mean.
 
-**Headline figure for the study:** the gap between group means. Example: `3.94 - 3.85 = 0.09` points — not "independent cafes are better".
+**Headline figure for the study:** the gap between group means. Example: `3.94 - 3.85 = 0.09` points - not "independent cafes are better".
 
 ---
 
-### 3.2 `correlate` — two numeric variables
+### 3.2 `correlate` - two numeric variables
 
 **When to use:** the question is "do higher values of X come with higher values of Y?" Both variables must be numeric.
 
@@ -157,13 +157,13 @@ Two coefficients: `pearson` (linear, sensitive to outliers) and `spearman` (rank
 
 The `chart` object is type `"scatter"`, with `x`, `y`, and `points` (a list of `[x, y]` pairs in input order).
 
-**Constant-column guard:** if either column is constant across all rows, the script exits non-zero with an error on stderr — correlation is undefined. Check your data before running.
+**Constant-column guard:** if either column is constant across all rows, the script exits non-zero with an error on stderr - correlation is undefined. Check your data before running.
 
 ---
 
-### 3.3 `distribute` — counts and proportions across categories
+### 3.3 `distribute` - counts and proportions across categories
 
-**When to use:** the question is "how is the dataset split across categories?" — optionally with a per-category average. Use this when the user wants to understand the shape of the sample or compare averages across more than two groups without framing it as a head-to-head comparison.
+**When to use:** the question is "how is the dataset split across categories?" - optionally with a per-category average. Use this when the user wants to understand the shape of the sample or compare averages across more than two groups without framing it as a head-to-head comparison.
 
 **Key output fields (with `--value-col`):**
 
@@ -201,18 +201,18 @@ The `chart` object is type `"bar"`, x axis = `by_col`, y axis = `"mean <value_co
 
 This section is the heart of the reference. The three baseline failure modes that this skill is designed to prevent:
 
-1. **Overclaiming** — a conclusion stated as a universal truth ("Independent cafes are ALWAYS better") from a tiny sample.
-2. **Missing n, source, date** — numbers floating without context.
-3. **Hand-computed or estimated figures** — bypassing the script and inventing or eyeballing values.
+1. **Overclaiming** - a conclusion stated as a universal truth ("Independent cafes are ALWAYS better") from a tiny sample.
+2. **Missing n, source, date** - numbers floating without context.
+3. **Hand-computed or estimated figures** - bypassing the script and inventing or eyeballing values.
 
 ### 4a. The integrity rule (non-negotiable)
 
 Every figure that appears in the study or in a promotion post must trace to exactly one of two sources:
 
 - **(a)** the JSON output of `scripts/analyze.py` on the supplied dataset, OR
-- **(b)** an explicitly cited external source — URL + retrieval date + the exact quoted number.
+- **(b)** an explicitly cited external source - URL + retrieval date + the exact quoted number.
 
-**Hand-computed estimates, approximate figures, and unverifiable statistics are not permitted.** If the dataset cannot support a number, the number does not appear. If you find yourself writing a figure that you did not read directly from `analyze.py` output or a cited URL, stop — either run the script, or remove the figure.
+**Hand-computed estimates, approximate figures, and unverifiable statistics are not permitted.** If the dataset cannot support a number, the number does not appear. If you find yourself writing a figure that you did not read directly from `analyze.py` output or a cited URL, stop - either run the script, or remove the figure.
 
 **Simple arithmetic derived from two fields of the same JSON object is permitted** (for example, the gap = group-A mean - group-B mean, both fields from the same `compare` JSON output), provided the derivation is shown explicitly as `field_A - field_B = result` wherever the derived figure is used (e.g., `90.25 - 87.125 = 3.125`). No rounding or approximation is allowed even in derived figures.
 
@@ -222,9 +222,9 @@ This rule applies to social posts too: a post that says "700+ ratings" when the 
 
 Every study and every analysis block must include:
 
-- **n** — total number of rows processed (from the `n` field in the JSON output)
-- **Dataset source** — where the data came from (a platform export, a dataset run ID, a manually curated CSV, etc.)
-- **Retrieval / export date** — when the data was captured
+- **n** - total number of rows processed (from the `n` field in the JSON output)
+- **Dataset source** - where the data came from (a platform export, a dataset run ID, a manually curated CSV, etc.)
+- **Retrieval / export date** - when the data was captured
 
 Template:
 > *Dataset: [source description], n=[value from analyze.py output], exported [date].*
@@ -232,13 +232,13 @@ Template:
 FR variant:
 > *Donnees : [description de la source], n=[valeur du champ n], exportees le [date].*
 
-Without these three, the study cannot be reproduced or challenged — which makes it worthless as a data study.
+Without these three, the study cannot be reproduced or challenged - which makes it worthless as a data study.
 
 ### 4c. Correlation != causation; comparison != ranking
 
 **For `correlate`:** report the association. Do not claim direction of cause.
 
-- Correct: "In this dataset of 8 hotels, there is a strong positive Spearman correlation (rho = 0.945) between star count and guest rating — higher-star hotels tend to have higher guest ratings in this sample."
+- Correct: "In this dataset of 8 hotels, there is a strong positive Spearman correlation (rho = 0.945) between star count and guest rating - higher-star hotels tend to have higher guest ratings in this sample."
 - Wrong: "More stars cause better guest experiences."
 
 **For `compare`:** report the gap. Do not claim one group is objectively superior.
@@ -248,10 +248,10 @@ Without these three, the study cannot be reproduced or challenged — which make
 
 The guarded phrasing template (cafes running example):
 
-> "In this dataset of 11 cafes, independent cafes scored on average 3.94 vs 3.85 for chain cafes — a 0.09-point gap. This is an association in a specific sample, not evidence that being independent causes higher scores or that the gap is representative of the broader market."
+> "In this dataset of 11 cafes, independent cafes scored on average 3.94 vs 3.85 for chain cafes - a 0.09-point gap. This is an association in a specific sample, not evidence that being independent causes higher scores or that the gap is representative of the broader market."
 
 FR variant:
-> "Dans cet ensemble de 11 cafes, les cafes independants obtiennent en moyenne 3,94 contre 3,85 pour les chaines — un ecart de 0,09 point. Il s'agit d'une association observee sur un echantillon precis, et non d'une preuve que l'independance cause des notes plus elevees."
+> "Dans cet ensemble de 11 cafes, les cafes independants obtiennent en moyenne 3,94 contre 3,85 pour les chaines - un ecart de 0,09 point. Il s'agit d'une association observee sur un echantillon precis, et non d'une preuve que l'independance cause des notes plus elevees."
 
 ### 4d. Flag sample bias and small n
 
@@ -261,9 +261,9 @@ Examples:
 - n=5 per group (cafes dataset): "With only 5 independent cafes and 6 chain cafes, this result is illustrative, not statistically robust. A larger and more representative dataset would be needed to confirm the direction of the gap."
 - Single-platform dataset: "This dataset covers only entries with ratings on one platform and may over-represent venues with active online communities."
 
-The script does not block small-n runs — that judgment is yours. But if you run it on n=3 per group and state a strong claim, you are producing the baseline failure.
+The script does not block small-n runs - that judgment is yours. But if you run it on n=3 per group and state a strong claim, you are producing the baseline failure.
 
-### 4e. std is population sigma — a spread figure, not inferential
+### 4e. std is population sigma - a spread figure, not inferential
 
 `analyze.py` uses `statistics.pstdev` (population standard deviation, dividing by N, not N-1). This is intentional: the dataset is treated as the complete population of interest for the study, not as a sample drawn to estimate a population parameter. Report `std` as a spread/context figure:
 

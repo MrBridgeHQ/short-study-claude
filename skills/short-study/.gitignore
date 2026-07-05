@@ -10,5 +10,5 @@ Thumbs.db
 __pycache__/
 *.pyc
 .pytest_cache/
-# scratch (research/RED notes — deleted before deploy)
+# scratch (research/RED notes - deleted before deploy)
 _*.md

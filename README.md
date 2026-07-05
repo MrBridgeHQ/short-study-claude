@@ -1,4 +1,4 @@
-# short-study — Claude Code Agent Skill
+# short-study - Claude Code Agent Skill
 
 An Agent Skill **for Claude** (Claude Code / claude.ai). **Target LLM: Claude.**
 

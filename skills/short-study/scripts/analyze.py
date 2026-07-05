@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-analyze.py — deterministic numbers engine for the short-study skill.
+analyze.py - deterministic numbers engine for the short-study skill.
 
 Subcommands: compare | correlate | distribute
 Reads CSV or JSON (file or stdin). Writes JSON to stdout.
@@ -125,7 +125,7 @@ def op_compare(rows: list[dict], group_col: str, value_col: str) -> dict:
             "n": len(vals),
             "mean": _round(statistics.mean(vals)),
             "median": _round(statistics.median(vals)),
-            "std": _round(statistics.pstdev(vals)),  # population σ — see module docstring
+            "std": _round(statistics.pstdev(vals)),  # population σ - see module docstring
             "min": _round(min(vals)),
             "max": _round(max(vals)),
         })
